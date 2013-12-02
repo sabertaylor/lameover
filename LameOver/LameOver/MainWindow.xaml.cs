@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +22,8 @@ namespace LameOver
     /// </summary>
     public partial class MainWindow : Window
     {
+        public ObservableCollection<string> BlockedProcesses = new ObservableCollection<string>();
+
         public MainWindow()
         {
             InitializeComponent();

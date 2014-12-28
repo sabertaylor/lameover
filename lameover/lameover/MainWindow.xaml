@@ -1,0 +1,26 @@
+﻿<Window x:Class="lameover.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Lame Over" Height="350" Width="525" MinWidth="525" MaxWidth="525">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="62px" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Blocked processes:" VerticalAlignment="Top" Width="231"/>
+        <Button Grid.Row="0" Content="Help" HorizontalAlignment="Left" Margin="423,6,0,0" VerticalAlignment="Top" Width="75"/>
+        <ListBox Name="blockList"  Grid.Row="0" HorizontalAlignment="Left" Margin="10,31,0,0" Width="488" ScrollViewer.CanContentScroll="True" />
+        <TextBox Grid.Row="1" HorizontalAlignment="Left" Height="23" Margin="90,37,0,0" TextWrapping="Wrap" Text="60" VerticalAlignment="Top" Width="30"/>
+        <TextBlock Grid.Row="1" HorizontalAlignment="Left" Margin="402,39,0,0" TextWrapping="Wrap" Text="Minutes used:" VerticalAlignment="Top" Width="85"/>
+        <TextBlock Grid.Row="1" HorizontalAlignment="Left" Margin="492,39,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top"/>
+        <TextBlock Grid.Row="1" HorizontalAlignment="Left" Margin="10,16,0,0" TextWrapping="Wrap" Text="Add/remove process:" VerticalAlignment="Top"/>
+        <TextBox Name="processTextBox" Grid.Row="1" HorizontalAlignment="Left" Height="23" Margin="128,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="229"/>
+        <Button Name="addButton" Grid.Row="1" Content="Add" HorizontalAlignment="Left" Margin="379,12,0,0" VerticalAlignment="Top" Width="48" Click="addButton_Click"/>
+        <Button Name="removeButton" Grid.Row="1" Content="Remove" HorizontalAlignment="Left" Margin="432,12,0,0" VerticalAlignment="Top" Width="66" Click="removeButton_Click"/>
+        <Button Grid.Row="1" Content="Set Limit" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="75"/>
+    </Grid>
+</Window>

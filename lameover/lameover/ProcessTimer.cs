@@ -10,24 +10,28 @@ namespace lameover
 {
     public class ProcessTimer
     {
-        private int usedSeconds = 0;
+        public const uint IntervalSeconds = 5;
+        private MainWindow mainWindow;
+
+        public delegate void GetDiversionsCallback();
+        public delegate void AddTimeCallback(List<string> processes);
+
+        public ProcessTimer(MainWindow mainWindow)
+        {
+            this.mainWindow = mainWindow;
+        }
 
         public void InfiniteLoop()
         {
             while (true)
             {
-                Thread.Sleep(5000);
+                Thread.Sleep((int)(IntervalSeconds * 1000));
 
-                Process[] processes = Process.GetProcesses().OrderBy(p => p.ProcessName).ToArray();
-
-                string blargh = string.Empty;
-                for (int i = 0; i < processes.Count(); i++)
-                {
-                    Process process = processes[i];
-                    blargh += string.Format("process: {0},  id: {1}{2}", process.ProcessName, process.Id, Environment.NewLine);
-                }
-
-                System.Windows.MessageBox.Show(blargh);
+                List<string> blockedProcesses = mainWindow.BlockedDiversions.GetDiversions();
+                List<string> processes = Process.GetProcesses().Select(p => p.ProcessName).ToList();                
+                var activeProcesses = processes.Intersect(blockedProcesses).ToList();
+                
+                mainWindow.BlockedDiversions.AddTime(activeProcesses, 5);
             }
         }
     }

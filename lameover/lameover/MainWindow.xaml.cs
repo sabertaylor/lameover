@@ -33,41 +33,9 @@ namespace lameover
         {
             InitializeComponent();
 
-            ReadProcessList();
-
             blockList.ItemsSource = BlockedDiversions.Processes;
 
             StartProcessMonitor();
-        }
-
-        public void ReadProcessList()
-        {
-        	try
-		    {
-			    using (Stream stream = File.Open("blocklist.bin", FileMode.Open))
-			    {
-			        BinaryFormatter bin = new BinaryFormatter();
-                    BlockedDiversions = (Diversions)bin.Deserialize(stream);
-			    }
-		    }
-		    catch (IOException)
-		    {
-		    }
-	    }
-
-        public void SaveProcessList()
-        {
-            try
-            {
-                using (Stream stream = File.Open("blocklist.bin", FileMode.Create))
-                {
-                    BinaryFormatter bin = new BinaryFormatter();
-                    bin.Serialize(stream, BlockedDiversions);
-                }
-            }
-            catch (IOException)
-            {
-            }
         }
 
         public void StartProcessMonitor()
@@ -91,7 +59,6 @@ namespace lameover
         private void addButton_Click(object sender, RoutedEventArgs e)
         {
             BlockedDiversions.AddDiversion(processTextBox.Text, 0);
-            SaveProcessList();
 
             blockList.ItemsSource = BlockedDiversions.Processes;
         }

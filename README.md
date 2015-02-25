@@ -1,4 +1,5 @@
 lameover
 ========
 
-When you reach your max quota for the day, executables matching your list will be blocked for the remainder of the day.
+Quotas for blacklisted programs / day.
+After max time, you'll be nagged until tomorrow.

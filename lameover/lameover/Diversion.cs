@@ -113,6 +113,17 @@ namespace lameover
                     {
                         if (ElapsedSeconds % 60 == 0)
                         {
+                            if (!blewWhistle)
+                            {
+                                System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"media\34600__reinsamba__sambawhistle1.wav");
+                                player.Play();
+                                blewWhistle = true;
+                            }
+                            else
+                            {
+                                System.Media.SystemSounds.Exclamation.Play();
+                            }
+
                             System.Windows.MessageBox.Show("lameover says: You're over time for diversions.");
                         }
                     }
@@ -134,7 +145,9 @@ namespace lameover
                 OnPropertyChanged(new PropertyChangedEventArgs("Completion"));
             }
         }
-        
+
+        private bool blewWhistle = false;
+
         public void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             if (PropertyChanged != null)

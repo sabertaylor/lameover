@@ -84,7 +84,19 @@ namespace lameover
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public Diversions Parent;
+        private string minutes = "0m";
         public string Process { get; set; }
+        public string MinutesUsed
+        {
+            get
+            {
+                return minutes;
+            }
+            set
+            {
+                minutes = value;
+            }
+        }
         public uint Completion
         {
             set
@@ -140,6 +152,13 @@ namespace lameover
                         totalElapsed += diversion.elapsedSeconds;
                     }
                     Parent.Processes[Parent.Processes.Count - 1].ElapsedSeconds = totalElapsed;
+                }
+
+                string newMinutesUsed = string.Format("{0}m", (elapsedSeconds / 60));
+                if (newMinutesUsed != MinutesUsed)
+                {
+                    MinutesUsed = newMinutesUsed;
+                    OnPropertyChanged(new PropertyChangedEventArgs("MinutesUsed"));
                 }
 
                 OnPropertyChanged(new PropertyChangedEventArgs("Completion"));

@@ -19,19 +19,19 @@
                 <DataTemplate>
                     <Grid Margin="0,2">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="70*" />
+                            <ColumnDefinition Width="10*" />
+                            <ColumnDefinition Width="20*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Process}" />
-                        <ProgressBar Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding Completion}" />
+                        <TextBlock Grid.Column="0" Text="{Binding Process}" />
+                        <TextBlock Grid.Column="1" Text="{Binding MinutesUsed}" />
+                        <ProgressBar Grid.Column="2" Minimum="0" Maximum="100" Value="{Binding Completion}" />
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
 
         <TextBox Name="MaxTimeTextBox" Grid.Row="1" HorizontalAlignment="Left" Height="23" Margin="90,37,0,0" TextWrapping="Wrap" Text="60" VerticalAlignment="Top" Width="30" TextChanged="TextBox_TextChanged"/>
-        <TextBlock Grid.Row="1" HorizontalAlignment="Left" Margin="402,39,0,0" TextWrapping="Wrap" Text="Minutes used:" VerticalAlignment="Top" Width="85"/>
-        <TextBlock Name="usedTextBox"  Grid.Row="1" HorizontalAlignment="Left" Margin="492,39,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top"/>
         <TextBlock Grid.Row="1" HorizontalAlignment="Left" Margin="10,16,0,0" TextWrapping="Wrap" Text="Add/remove process:" VerticalAlignment="Top"/>
         <TextBox Name="processTextBox" Grid.Row="1" HorizontalAlignment="Left" Height="23" Margin="128,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="229"/>
         <Button Name="addButton" Grid.Row="1" Content="Add" HorizontalAlignment="Left" Margin="379,12,0,0" VerticalAlignment="Top" Width="48" Click="addButton_Click"/>

@@ -27,8 +27,8 @@ namespace lameover
             {
                 Thread.Sleep((int)(IntervalSeconds * 1000));
 
-                List<string> blockedProcesses = mainWindow.BlockedDiversions.GetDiversions();
-                List<string> processes = Process.GetProcesses().Select(p => p.ProcessName).ToList();                
+                List<string> blockedProcesses = mainWindow.BlockedDiversions.GetDiversionsLowerCase();
+                List<string> processes = Process.GetProcesses().Select(p => p.ProcessName.ToLower()).ToList();
                 var activeProcesses = processes.Intersect(blockedProcesses).ToList();
                 
                 mainWindow.BlockedDiversions.AddTime(activeProcesses, 5);

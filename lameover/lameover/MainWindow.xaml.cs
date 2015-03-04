@@ -25,12 +25,14 @@ namespace lameover
     /// </summary>
     public partial class MainWindow : Window
     {
-        public Diversions BlockedDiversions = new Diversions();
+        public Diversions BlockedDiversions;
 
         public Thread worker;
 
         public MainWindow()
         {
+            BlockedDiversions = Configuration.Load();
+
             InitializeComponent();
 
             blockList.ItemsSource = BlockedDiversions.Processes;
@@ -77,6 +79,11 @@ namespace lameover
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
            BlockedDiversions.SetMaxTime(uint.Parse(MaxTimeTextBox.Text));
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Configuration.Save(BlockedDiversions);
         }
     }
 }

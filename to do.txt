@@ -12,6 +12,7 @@ Sprint 2:
 
 - Bugfix: don't double count for more than 1 banned process.
 - Stop counting during screen lock.
+- Persist a log file of time usage.
 
 ======
 

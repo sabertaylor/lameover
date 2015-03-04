@@ -5,41 +5,75 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace lameover
 {
     public class Diversions
     {
+        [XmlArrayItem("Process")]
         public ObservableCollection<Diversion> Processes;
+        [XmlElement]
         public uint MaxMinutes = 60;
-        
+
         public Diversions()
         {
-            Processes = new ObservableCollection<Diversion>()
-            {
-                new Diversion()
-                {
-                    Process = "Total",
-                    Parent = this
-                }            
-            };
+            Processes = new ObservableCollection<Diversion>();
         }
 
         public void AddDiversion(string process, uint seconds)
         {
+            bool totalPresent = Processes.Count(p => p.Process == "Total") > 0;
+
+            if (process == "Total" && totalPresent)
+            {
+                // 1 Total is enough.
+                return;
+            }
+
+            // Some logic for keeping "Total" at end of the collection.
             lock (this)
             {
-                Processes.Insert(Processes.Count - 1, new Diversion()
+                var diversion = new Diversion()
                 {
                     Parent = this,
                     Process = process,
                     ElapsedSeconds = seconds
-                });
+                };
+
+                if (process == "Total")
+                {
+                    Processes.Add(diversion);
+                }
+                else
+                {
+                    if (Processes.Count == 0)
+                    {
+                        Processes.Add(diversion);
+                    }
+                    else
+                    {
+                        if (totalPresent)
+                        {
+                            Processes.Insert(Processes.Count - 1, diversion);
+                        }
+                        else
+                        {
+                            Processes.Add(diversion);
+                        }
+                    }
+                }
             }
         }
 
         public void RemoveDiversion(int index)
         {
+            if (index == Processes.Count - 1)
+            {
+                // Can't remove the "Total"
+                return;
+            }
+
             lock (this)
             {
                 Processes.RemoveAt(index);
@@ -62,7 +96,7 @@ namespace lameover
                 {
                     foreach (string name in process)
                     {
-                        if (diversion.Process == name)
+                        if (diversion.Process.ToLower() == name.ToLower())
                         {
                             diversion.ElapsedSeconds += seconds;
                         }
@@ -71,21 +105,23 @@ namespace lameover
             }
         }
 
-        public List<string> GetDiversions()
+        public List<string> GetDiversionsLowerCase()
         {
             lock (this)
             {
-                return Processes.Select(diversion => diversion.Process).ToList();
+                return Processes.Select(diversion => diversion.Process.ToLower()).ToList();
             }
         }
     }
-
+    
     public class Diversion : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        [XmlIgnore]
         public Diversions Parent;
         private string minutes = "0m";
         public string Process { get; set; }
+        [XmlIgnore]
         public string MinutesUsed
         {
             get
@@ -97,6 +133,7 @@ namespace lameover
                 minutes = value;
             }
         }
+        [XmlIgnore]
         public uint Completion
         {
             set
@@ -109,6 +146,7 @@ namespace lameover
             }
         }
         private uint elapsedSeconds = 0;
+        [XmlIgnore]
         public uint ElapsedSeconds
         {
             get
@@ -118,6 +156,11 @@ namespace lameover
             set
             {
                 elapsedSeconds = value;
+                if (value == 0)
+                {
+                    // On deserialization.
+                    return;
+                }
 
                 if (Process == "Total")
                 {
@@ -142,6 +185,7 @@ namespace lameover
                 }
                 else
                 {
+                    // Set total time.
                     uint totalElapsed = 0;
                     foreach (var diversion in Parent.Processes)
                     {

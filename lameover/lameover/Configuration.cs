@@ -25,16 +25,16 @@ namespace lameover
         {
             System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(Diversions));
 
-            Diversions justNames;
+            Diversions diversions;
             using (TextReader reader = new StreamReader(configurationFile))
             {
-                justNames = (Diversions)serializer.Deserialize(reader);
+                diversions = (Diversions)serializer.Deserialize(reader);
             }
 
-            Diversions diversions = new Diversions();
-            foreach (var process in justNames.Processes)
+            // Fix up the deserialization.
+            foreach (var process in diversions.Processes)
             {
-                diversions.AddDiversion(process.Process, 0);
+                process.Parent = diversions;
             }
 
             return diversions;

@@ -31,11 +31,11 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <TextBox Name="MaxTimeTextBox" Grid.Row="1" HorizontalAlignment="Left" Height="23" Margin="90,37,0,0" TextWrapping="Wrap" Text="60" VerticalAlignment="Top" Width="30" TextChanged="TextBox_TextChanged"/>
+        <TextBox Name="MaxTimeTextBox" Grid.Row="1" HorizontalAlignment="Left" Height="23" Margin="90,37,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="30"/>
         <TextBlock Grid.Row="1" HorizontalAlignment="Left" Margin="10,16,0,0" TextWrapping="Wrap" Text="Add/remove process:" VerticalAlignment="Top"/>
         <TextBox Name="processTextBox" Grid.Row="1" HorizontalAlignment="Left" Height="23" Margin="128,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="229"/>
         <Button Name="addButton" Grid.Row="1" Content="Add" HorizontalAlignment="Left" Margin="379,12,0,0" VerticalAlignment="Top" Width="48" Click="addButton_Click"/>
         <Button Name="removeButton" Grid.Row="1" Content="Remove" HorizontalAlignment="Left" Margin="432,12,0,0" VerticalAlignment="Top" Width="66" Click="removeButton_Click"/>
-        <Button Grid.Row="1" Content="Set Limit" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Name="MaxTimeTextButton" Grid.Row="1" Content="Set Limit" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="75" Click="MaxTimeTextButtonClick"/>
     </Grid>
 </Window>

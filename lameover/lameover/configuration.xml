@@ -3,7 +3,10 @@
   <Processes>
     <Process>
       <Process>Total</Process>
+      <ElapsedSeconds>0</ElapsedSeconds>
     </Process>
   </Processes>
-  <MaxMinutes>90</MaxMinutes>
+  <MaxMinutes>75</MaxMinutes>
+  <BlewWhistle>false</BlewWhistle>
+  <Today>2015-03-09T00:00:00-07:00</Today>
 </Diversions>

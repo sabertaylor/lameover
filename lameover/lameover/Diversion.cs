@@ -15,6 +15,11 @@ namespace lameover
         public ObservableCollection<Diversion> Processes;
         [XmlElement]
         public uint MaxMinutes = 60;
+        [XmlElement]
+        public bool BlewWhistle = false;
+
+        [XmlElement]
+        public DateTime Today { get; set; }
 
         public Diversions()
         {
@@ -98,7 +103,7 @@ namespace lameover
                     {
                         if (diversion.Process.ToLower() == name.ToLower())
                         {
-                            diversion.ElapsedSeconds += seconds;
+                            diversion.AddSeconds(seconds);
                         }
                     }
                 }
@@ -112,15 +117,42 @@ namespace lameover
                 return Processes.Select(diversion => diversion.Process.ToLower()).ToList();
             }
         }
+
+        /// <param name="now">DateTime without the Time part.</param>
+        /// <returns>True if now is over a day further.</returns>
+        public bool CheckForNewDay(DateTime now)
+        {
+            if ((now - Today).TotalDays >= 1)
+            {
+                ResetAllTimes();
+
+                Today = now;
+                return true;
+            }
+            return false;
+        }
+
+        private void ResetAllTimes()
+        {
+            foreach (var process in Processes)
+            {
+                process.ElapsedSeconds = 0;
+            }
+        }
     }
     
     public class Diversion : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+
         [XmlIgnore]
         public Diversions Parent;
-        private string minutes = "0m";
+
+        [XmlElement]
         public string Process { get; set; }
+
+        private string minutes = "0m";
+        
         [XmlIgnore]
         public string MinutesUsed
         {
@@ -133,20 +165,21 @@ namespace lameover
                 minutes = value;
             }
         }
+        
         [XmlIgnore]
         public uint Completion
         {
             set
             {
-                ElapsedSeconds = 1;
             }
             get
             {
                 return (uint)(100.0 * ElapsedSeconds / 60 / Parent.MaxMinutes);
             }
         }
-        private uint elapsedSeconds = 0;
-        [XmlIgnore]
+
+        private uint elapsedSeconds;
+        [XmlElement]
         public uint ElapsedSeconds
         {
             get
@@ -156,48 +189,6 @@ namespace lameover
             set
             {
                 elapsedSeconds = value;
-                if (value == 0)
-                {
-                    // On deserialization.
-                    return;
-                }
-
-                if (Process == "Total")
-                {
-                    if (Completion >= 100)
-                    {
-                        if (ElapsedSeconds % 60 == 0)
-                        {
-                            if (!blewWhistle)
-                            {
-                                System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"media\34600__reinsamba__sambawhistle1.wav");
-                                player.Play();
-                                blewWhistle = true;
-                            }
-                            else
-                            {
-                                System.Media.SystemSounds.Exclamation.Play();
-                            }
-
-                            System.Windows.MessageBox.Show("lameover says: You're over time for diversions.");
-                        }
-                    }
-                }
-                else
-                {
-                    // Set total time.
-                    uint totalElapsed = 0;
-                    foreach (var diversion in Parent.Processes)
-                    {
-                        if (diversion.Process == "Total")
-                        {
-                            continue;
-                        }
-                        totalElapsed += diversion.elapsedSeconds;
-                    }
-                    Parent.Processes[Parent.Processes.Count - 1].ElapsedSeconds = totalElapsed;
-                }
-
                 string newMinutesUsed = string.Format("{0}m", (elapsedSeconds / 60));
                 if (newMinutesUsed != MinutesUsed)
                 {
@@ -209,7 +200,42 @@ namespace lameover
             }
         }
 
-        private bool blewWhistle = false;
+        public void AddSeconds(uint seconds)
+        {
+            ElapsedSeconds += seconds;
+
+            if (Parent.CheckForNewDay(DateTime.Now.Date))
+            {
+                return;
+            }
+
+            if (Process == "Total")
+            {
+                if (Completion >= 100)
+                {
+                    if (ElapsedSeconds % 60 == 0)
+                    {
+                        if (!Parent.BlewWhistle)
+                        {
+                            System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"media\34600__reinsamba__sambawhistle1.wav");
+                            player.Play();
+                            Parent.BlewWhistle = true;
+                        }
+                        else
+                        {
+                            System.Media.SystemSounds.Exclamation.Play();
+                        }
+
+                        System.Windows.MessageBox.Show("lameover says: You're over time for diversions.");
+                    }
+                }
+            }
+            else
+            {
+                // "Total"
+                Parent.Processes[Parent.Processes.Count - 1].AddSeconds(seconds);
+            }
+        }
 
         public void OnPropertyChanged(PropertyChangedEventArgs e)
         {

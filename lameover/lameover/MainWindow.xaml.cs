@@ -36,6 +36,7 @@ namespace lameover
             InitializeComponent();
 
             blockList.ItemsSource = BlockedDiversions.Processes;
+            MaxTimeTextBox.Text = BlockedDiversions.MaxMinutes.ToString();
 
             StartProcessMonitor();
         }
@@ -76,14 +77,25 @@ namespace lameover
             blockList.ItemsSource = BlockedDiversions.Processes;
         }
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-           BlockedDiversions.SetMaxTime(uint.Parse(MaxTimeTextBox.Text));
-        }
-
         private void Window_Closed(object sender, EventArgs e)
         {
             Configuration.Save(BlockedDiversions);
+        }
+
+        // SABER-TODO: fix the event name to be specific.
+        private void MaxTimeTextButtonClick(object sender, RoutedEventArgs e)
+        {
+            uint maxMinutes;
+
+            // Input validation.
+            if (!uint.TryParse(MaxTimeTextBox.Text, out maxMinutes))
+            {
+                MaxTimeTextBox.Text = "err";
+
+                return;
+            }
+
+            BlockedDiversions.SetMaxTime(maxMinutes);
         }
     }
 }

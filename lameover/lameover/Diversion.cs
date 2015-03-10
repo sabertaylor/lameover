@@ -124,7 +124,7 @@ namespace lameover
         {
             if ((now - Today).TotalDays >= 1)
             {
-                ResetAllTimes();
+                NewDayReset();
 
                 Today = now;
                 return true;
@@ -132,8 +132,10 @@ namespace lameover
             return false;
         }
 
-        private void ResetAllTimes()
+        private void NewDayReset()
         {
+            BlewWhistle = false;
+
             foreach (var process in Processes)
             {
                 process.ElapsedSeconds = 0;
@@ -226,6 +228,7 @@ namespace lameover
                             System.Media.SystemSounds.Exclamation.Play();
                         }
 
+                        // Synchronous prompt... stops the timer.
                         System.Windows.MessageBox.Show("lameover says: You're over time for diversions.");
                     }
                 }

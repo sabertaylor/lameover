@@ -97,5 +97,10 @@ namespace lameover
 
             BlockedDiversions.SetMaxTime(maxMinutes);
         }
+
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("notepad.exe", "help.txt");
+        }
     }
 }

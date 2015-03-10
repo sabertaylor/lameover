@@ -1,0 +1,32 @@
+Lame Over
+
+-------
+
+Frequently Asked Questions:
+
+-------
+
+Q: What is "Lame Over"?
+A: It is a way to play less video games.
+
+Q: How does Lame Over help you?
+A: If you go over the quota of minutes that you Set, then a
+whistle will blow.
+
+Q: How do I reset the time spent playing games?
+A: If Lame Over is on a new day, then the time spent playing
+games is reset to 0.
+
+Q: How do I add a list of video games?
+A: Open Windows Task Manager > Details, and find the "process"
+name that you see there associated with your running game.
+Then use the Add/Remove buttons to set the list of game
+processes.
+
+-------
+
+Q: Where is the source code?
+A: https://github.com/sabertaylor/lameover/
+
+Q: What is the license?
+A: GPL v3. See the included text file for the legal details.

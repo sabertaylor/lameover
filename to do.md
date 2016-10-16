@@ -1,17 +1,22 @@
-# New concept
+# What is lameover?
 
-Before lameover was going to be a process killer, after you play a game too long, but now I'm thinking more of popup nag. Like a clock in a casino, reminded every half hour how long you've wasted time.
+An aid to play less video games.
 
-The blocker has been writing a DirectX popup, during games. It will be simple to implement once I find the right API since there's plenty of other software that does overlays.
+It will nag like a "clock in a casino."
 
-# Future Features
+# Roadmap
 
-## Add these
+## Sprint 2
 
-Features
-* 
+New Features:
+* TTS nag.
 
-## "Nice to have"
+Changes:
+* Nag repeats itself instead of just firing off once.
 
-Features
-* Pick the banned process names out of a window of current processes.
+## Future sprints
+
+Features:
+* Nice to have - Pick the procrastination process names out of a window of current processes.
+* Not sure - Instead of just process name, be able to see what URL browsers are on.
+* Overlay 3D session w/ popup in addition to the audio nag.

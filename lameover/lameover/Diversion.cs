@@ -1,147 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Speech.Synthesis;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace lameover
 {
-    public class Diversions
-    {
-        [XmlArrayItem("Process")]
-        public ObservableCollection<Diversion> Processes;
-        [XmlElement]
-        public uint NagIntervalInMinutes = 30;
-
-        [XmlElement]
-        public DateTime Today { get; set; }
-
-        public Diversions()
-        {
-            Processes = new ObservableCollection<Diversion>();
-        }
-
-        public void AddDiversion(string process, uint seconds)
-        {
-            bool totalPresent = Processes.Count(p => p.Process == "Total") > 0;
-
-            if (process == "Total" && totalPresent)
-            {
-                // 1 Total is enough.
-                return;
-            }
-
-            // Some logic for keeping "Total" at end of the collection.
-            lock (this)
-            {
-                var diversion = new Diversion()
-                {
-                    Parent = this,
-                    Process = process,
-                    ElapsedSeconds = seconds
-                };
-
-                if (process == "Total")
-                {
-                    Processes.Add(diversion);
-                }
-                else
-                {
-                    if (Processes.Count == 0)
-                    {
-                        Processes.Add(diversion);
-                    }
-                    else
-                    {
-                        if (totalPresent)
-                        {
-                            Processes.Insert(Processes.Count - 1, diversion);
-                        }
-                        else
-                        {
-                            Processes.Add(diversion);
-                        }
-                    }
-                }
-            }
-        }
-
-        public void RemoveDiversion(int index)
-        {
-            if (index == Processes.Count - 1)
-            {
-                // Can't remove the "Total"
-                return;
-            }
-
-            lock (this)
-            {
-                Processes.RemoveAt(index);
-            }
-        }
-
-        public void SetMaxTime(uint minutes)
-        {
-            lock (this)
-            {
-                NagIntervalInMinutes = minutes;
-            }
-        }
-
-        public void AddTime(List<string> process, uint seconds)
-        {
-            lock (this)
-            {
-                foreach (Diversion diversion in Processes)
-                {
-                    foreach (string name in process)
-                    {
-                        if (diversion.Process.ToLower() == name.ToLower())
-                        {
-                            diversion.AddSeconds(seconds);
-                        }
-                    }
-                }
-            }
-        }
-
-        public List<string> GetDiversionsLowerCase()
-        {
-            lock (this)
-            {
-                return Processes.Select(diversion => diversion.Process.ToLower()).ToList();
-            }
-        }
-
-        /// <param name="now">DateTime without the Time part.</param>
-        /// <returns>True if now is over a day further.</returns>
-        public bool CheckForNewDay()
-        {
-            DateTime now = DateTime.Now.Date;
-
-            if ((now - Today).TotalDays >= 1)
-            {
-                NewDayReset();
-
-                Today = now;
-                return true;
-            }
-            return false;
-        }
-
-        private void NewDayReset()
-        {
-            foreach (var process in Processes)
-            {
-                process.ElapsedSeconds = 0;
-            }
-        }
-    }
-    
     public class Diversion : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -163,19 +26,54 @@ namespace lameover
             }
             set
             {
-                minutes = value;
+                if (value != minutes)
+                {
+                    value = minutes;
+                    OnPropertyChanged(new PropertyChangedEventArgs("MinutesUsed"));
+                }
             }
         }
-        
+
+        private uint completion;
         [XmlIgnore]
         public uint Completion
         {
+            get
+            {
+                return completion;
+            }
+            set
+            {
+                if (value != completion)
+                {
+                    value = completion;
+                    OnPropertyChanged(new PropertyChangedEventArgs("Completion"));
+                }
+            }
+        }
+
+        [XmlIgnore]
+        private uint completedIntervals
+        {
+            get
+            {
+                return (uint)(ElapsedSeconds / 60 / Parent.NagIntervalInMinutes);
+            }
             set
             {
             }
+        }
+
+        [XmlIgnore]
+        private string warningLevelColor;
+        public string WarningLevelColor
+        {
             get
             {
-                return (uint)(100.0 * ElapsedSeconds / 60 / Parent.NagIntervalInMinutes);
+                return GetWarningColor();
+            }
+            set
+            {
             }
         }
 
@@ -190,12 +88,7 @@ namespace lameover
             set
             {
                 elapsedSeconds = value;
-                string newMinutesUsed = string.Format("{0}m", (elapsedSeconds / 60));
-                if (newMinutesUsed != MinutesUsed)
-                {
-                    MinutesUsed = newMinutesUsed;
-                    OnPropertyChanged(new PropertyChangedEventArgs("MinutesUsed"));
-                }
+                MinutesUsed = string.Format("{0}m", (elapsedSeconds / 60));
 
                 OnPropertyChanged(new PropertyChangedEventArgs("Completion"));
             }
@@ -203,27 +96,28 @@ namespace lameover
 
         public void AddSeconds(uint seconds)
         {
+            uint oldCompletedIntervals = completedIntervals;
             ElapsedSeconds += seconds;
 
-            if (Parent.CheckForNewDay())
+            Completion = (uint)((100.0 * ElapsedSeconds / 60 / Parent.NagIntervalInMinutes)) % 100;
+
+            if (Process != "Total")
             {
-                return;
+                // Add to "Total"
+                Parent.Processes[Parent.Processes.Count - 1].AddSeconds(seconds);
             }
 
+            if (completedIntervals != oldCompletedIntervals)
+            {
+                OnPropertyChanged(new PropertyChangedEventArgs("WarningLevelColor"));
+            }
+            
             if (Process == "Total")
             {
-                if (Completion >= 100)
+                if (completedIntervals != oldCompletedIntervals)
                 {
-                    if (ElapsedSeconds % 60 == 0)
-                    {
-                        NagTheUser();
-                    }
+                    NagTheUser();
                 }
-            }
-            else
-            {
-                // "Total"
-                Parent.Processes[Parent.Processes.Count - 1].AddSeconds(seconds);
             }
         }
 
@@ -243,6 +137,17 @@ namespace lameover
             {
                 PropertyChanged(this, e);
             }
+        }
+
+        private string GetWarningColor()
+        {
+            switch (completedIntervals)
+            {
+                case 0 : return "Green";
+                case 1 : return "Yellow";
+                case 2 : return "Red";
+                default : return "Black";
+            };
         }
     }
 }

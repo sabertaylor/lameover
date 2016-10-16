@@ -38,7 +38,7 @@ namespace lameover
             blockList.ItemsSource = BlockedDiversions.Processes;
             MaxTimeTextBox.Text = BlockedDiversions.NagIntervalInMinutes.ToString();
 
-            BlockedDiversions.CheckForNewDay();
+            BlockedDiversions.ResetIfNewDay();
 
             StartProcessMonitor();
         }
@@ -84,7 +84,6 @@ namespace lameover
             Configuration.Save(BlockedDiversions);
         }
 
-        // SABER-TODO: fix the event name to be specific.
         private void MaxTimeTextButtonClick(object sender, RoutedEventArgs e)
         {
             uint maxMinutes;
@@ -92,7 +91,7 @@ namespace lameover
             // Input validation.
             if (!uint.TryParse(MaxTimeTextBox.Text, out maxMinutes))
             {
-                MaxTimeTextBox.Text = "err";
+                MaxTimeTextBox.Text = "NaN";
 
                 return;
             }

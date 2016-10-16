@@ -11,7 +11,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Blocked processes:" VerticalAlignment="Top" Width="231"/>
+        <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Watched processes:" VerticalAlignment="Top" Width="231"/>
         <Button Name="HelpButton" Grid.Row="0" Content="Help" HorizontalAlignment="Left" Margin="423,6,0,0" VerticalAlignment="Top" Width="75" Click="HelpButton_Click"/>
 
         <ListBox Name="blockList" Grid.Row="0" HorizontalAlignment="Left" Margin="10,31,0,0" Width="488" HorizontalContentAlignment="Stretch" ScrollViewer.CanContentScroll="True">
@@ -25,7 +25,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Process}" />
                         <TextBlock Grid.Column="1" Text="{Binding MinutesUsed}" />
-                        <ProgressBar Grid.Column="2" Minimum="0" Maximum="100" Value="{Binding Completion}" />
+                        <ProgressBar  Grid.Column="2" Minimum="0" Maximum="100" Value="{Binding Completion}" />
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
@@ -36,6 +36,6 @@
         <TextBox Name="processTextBox" Grid.Row="1" HorizontalAlignment="Left" Height="23" Margin="128,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="229"/>
         <Button Name="addButton" Grid.Row="1" Content="Add" HorizontalAlignment="Left" Margin="379,12,0,0" VerticalAlignment="Top" Width="48" Click="addButton_Click"/>
         <Button Name="removeButton" Grid.Row="1" Content="Remove" HorizontalAlignment="Left" Margin="432,12,0,0" VerticalAlignment="Top" Width="66" Click="removeButton_Click"/>
-        <Button Name="MaxTimeTextButton" Grid.Row="1" Content="Set Limit" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="75" Click="MaxTimeTextButtonClick"/>
+        <Button Name="MaxTimeTextButton" Grid.Row="1" Content="Set Interval" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="75" Click="MaxTimeTextButtonClick"/>
     </Grid>
 </Window>

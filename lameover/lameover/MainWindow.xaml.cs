@@ -36,7 +36,9 @@ namespace lameover
             InitializeComponent();
 
             blockList.ItemsSource = BlockedDiversions.Processes;
-            MaxTimeTextBox.Text = BlockedDiversions.MaxMinutes.ToString();
+            MaxTimeTextBox.Text = BlockedDiversions.NagIntervalInMinutes.ToString();
+
+            BlockedDiversions.CheckForNewDay();
 
             StartProcessMonitor();
         }

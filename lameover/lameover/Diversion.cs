@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Speech.Synthesis;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -14,9 +15,7 @@ namespace lameover
         [XmlArrayItem("Process")]
         public ObservableCollection<Diversion> Processes;
         [XmlElement]
-        public uint MaxMinutes = 60;
-        [XmlElement]
-        public bool BlewWhistle = false;
+        public uint NagIntervalInMinutes = 30;
 
         [XmlElement]
         public DateTime Today { get; set; }
@@ -89,7 +88,7 @@ namespace lameover
         {
             lock (this)
             {
-                MaxMinutes = minutes;
+                NagIntervalInMinutes = minutes;
             }
         }
 
@@ -120,8 +119,10 @@ namespace lameover
 
         /// <param name="now">DateTime without the Time part.</param>
         /// <returns>True if now is over a day further.</returns>
-        public bool CheckForNewDay(DateTime now)
+        public bool CheckForNewDay()
         {
+            DateTime now = DateTime.Now.Date;
+
             if ((now - Today).TotalDays >= 1)
             {
                 NewDayReset();
@@ -134,8 +135,6 @@ namespace lameover
 
         private void NewDayReset()
         {
-            BlewWhistle = false;
-
             foreach (var process in Processes)
             {
                 process.ElapsedSeconds = 0;
@@ -176,7 +175,7 @@ namespace lameover
             }
             get
             {
-                return (uint)(100.0 * ElapsedSeconds / 60 / Parent.MaxMinutes);
+                return (uint)(100.0 * ElapsedSeconds / 60 / Parent.NagIntervalInMinutes);
             }
         }
 
@@ -206,7 +205,7 @@ namespace lameover
         {
             ElapsedSeconds += seconds;
 
-            if (Parent.CheckForNewDay(DateTime.Now.Date))
+            if (Parent.CheckForNewDay())
             {
                 return;
             }
@@ -217,19 +216,7 @@ namespace lameover
                 {
                     if (ElapsedSeconds % 60 == 0)
                     {
-                        if (!Parent.BlewWhistle)
-                        {
-                            System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"media\34600__reinsamba__sambawhistle1.wav");
-                            player.Play();
-                            Parent.BlewWhistle = true;
-                        }
-                        else
-                        {
-                            System.Media.SystemSounds.Exclamation.Play();
-                        }
-
-                        // Synchronous prompt... stops the timer.
-                        System.Windows.MessageBox.Show("lameover says: You're over time for diversions.");
+                        NagTheUser();
                     }
                 }
             }
@@ -237,6 +224,16 @@ namespace lameover
             {
                 // "Total"
                 Parent.Processes[Parent.Processes.Count - 1].AddSeconds(seconds);
+            }
+        }
+
+        public void NagTheUser()
+        {
+            System.Media.SystemSounds.Beep.Play();
+
+            using (SpeechSynthesizer synth = new SpeechSynthesizer())
+            {
+                synth.Speak(string.Format("You have been using all watched processes for {0} minutes.", (int)(ElapsedSeconds / 60)));
             }
         }
 

@@ -28,7 +28,7 @@ namespace lameover
             {
                 if (value != minutes)
                 {
-                    value = minutes;
+                    minutes = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("MinutesUsed"));
                 }
             }
@@ -46,7 +46,7 @@ namespace lameover
             {
                 if (value != completion)
                 {
-                    value = completion;
+                    completion = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("Completion"));
                 }
             }
